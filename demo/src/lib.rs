@@ -240,6 +240,8 @@ struct KeyboardState {
     right: bool,
     left: bool,
     backwards: bool,
+	go_up: bool,
+	go_down: bool,
     cursor_grab: bool,
     control: bool,
 }
@@ -292,6 +294,12 @@ fn handle_keyboard_input(
 
                                 window_changes.fullscreen = Some(*fullscreen);
                             }
+						}
+                        Some(VirtualKeyCode::Space) => {
+                            keyboard_state.go_up = pressed;
+                        }
+                        Some(VirtualKeyCode::C) => {
+                            keyboard_state.go_down = pressed;
                         }
                         _ => {}
                     }
@@ -323,8 +331,10 @@ fn update_camera(
     let forwards = keyboard_state.forwards as i32 - keyboard_state.backwards as i32;
     let right = keyboard_state.right as i32 - keyboard_state.left as i32;
 
+	let up_amount = keyboard_state.go_up as i32 - keyboard_state.go_down as i32;
+
     let move_vec = camera_rig.final_transform.rotation
-        * Vec3::new(right as f32, 0.0, -forwards as f32).clamp_length_max(1.0);
+        * Vec3::new(right as f32, up_amount as f32, -forwards as f32).clamp_length_max(1.0);
 
     let delta_time = 1.0 / 60.0;
     let speed = 3.0;
